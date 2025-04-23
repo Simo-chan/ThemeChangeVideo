@@ -1,4 +1,4 @@
-package com.example.themechangevideo.ui
+package com.example.themechangevideo
 
 import android.content.Context
 import androidx.datastore.core.DataStore
@@ -9,7 +9,7 @@ import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-class MyDataStore(val context: Context) {
+class DataStore(val context: Context) {
     val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = DATA_STORE_NAME)
 
     suspend fun setNewTheme(isDarkTheme: Boolean) {

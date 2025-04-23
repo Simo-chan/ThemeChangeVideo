@@ -59,6 +59,12 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
-    implementation ("androidx.datastore:datastore-preferences:1.1.4")
+    //Note that it's recommended to use version catalog!
+
+    //DataStore
+    implementation("androidx.datastore:datastore-preferences:1.1.4")
+    //Icons
     implementation("androidx.compose.material:material-icons-extended:1.7.8")
+    //Koin DI
+    implementation("io.insert-koin:koin-androidx-compose:3.5.6")
 }

@@ -20,36 +20,62 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.themechangevideo.ui.ExampleContent
 import com.example.themechangevideo.ui.theme.ThemeChangeVideoTheme
 import kotlinx.coroutines.launch
+import org.koin.androidx.compose.koinViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            var isDarkTheme by remember { mutableStateOf(true) }
+            val viewModel = koinViewModel<ViewModel>()
+            val themeState by viewModel.themeState.collectAsStateWithLifecycle()
 
-            Crossfade(targetState = isDarkTheme, animationSpec = tween(1000)) { newTheme ->
-                ThemeChangeVideoTheme(darkTheme = newTheme) {
-                    Scaffold(
-                        topBar = {
-                            ExampleTopAppBar(
-                                isDarkTheme = newTheme,
-                                onClick = { isDarkTheme = !isDarkTheme })
-                        },
-                        modifier = Modifier.fillMaxSize()
-                    ) { innerPadding ->
-                        ExampleContent(modifier = Modifier.padding(innerPadding))
-                    }
+            when (themeState) {
+                is ThemeState.Loaded -> {
+                    val isDarkTheme = (themeState as ThemeState.Loaded).isDarkTheme
+                    MainContent(
+                        isDarkTheme = isDarkTheme,
+                        onClick = { viewModel.setNewTheme() }
+                    )
                 }
+
+                ThemeState.Loading -> {
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun MainContent(
+    isDarkTheme: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Crossfade(
+        targetState = isDarkTheme,
+        animationSpec = tween(1000)
+    ) { newTheme ->
+        ThemeChangeVideoTheme(darkTheme = newTheme) {
+            Scaffold(
+                topBar = {
+                    ExampleTopAppBar(
+                        isDarkTheme = newTheme,
+                        onClick = onClick
+                    )
+                },
+                modifier = Modifier.fillMaxSize()
+            ) { innerPadding ->
+                ExampleContent(modifier = Modifier.padding(innerPadding))
             }
         }
     }
