@@ -19,7 +19,7 @@ class DataStore(val context: Context) {
     }
 
     val getCurrentTheme: Flow<Boolean> = context.dataStore.data.map { preferences ->
-        preferences[THEME_PREFERENCES_KEY] == true
+        preferences[THEME_PREFERENCES_KEY] ?: false
     }
 
     private companion object {

@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
@@ -25,6 +26,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.themechangevideo.ui.ExampleContent
 import com.example.themechangevideo.ui.theme.ThemeChangeVideoTheme
@@ -32,24 +34,27 @@ import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
 class MainActivity : ComponentActivity() {
+
+    private val viewModel: ExampleViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        installSplashScreen().apply {
+            setKeepOnScreenCondition {
+                viewModel.themeState.value.isLoading
+            }
+        }
         setContent {
-            val viewModel = koinViewModel<ViewModel>()
-            val themeState by viewModel.themeState.collectAsStateWithLifecycle()
+            val koinViewModel = koinViewModel<ExampleViewModel>()
+            val themeState by koinViewModel.themeState.collectAsStateWithLifecycle()
 
-            when (themeState) {
-                is ThemeState.Loaded -> {
-                    val isDarkTheme = (themeState as ThemeState.Loaded).isDarkTheme
-                    MainContent(
-                        isDarkTheme = isDarkTheme,
-                        onClick = { viewModel.setNewTheme() }
-                    )
-                }
-
-                ThemeState.Loading -> {
-                }
+            if (!themeState.isLoading) {
+                MainContent(
+                    isDarkTheme = themeState.isDarkTheme,
+                    onClick = { viewModel.setNewTheme() }
+                )
             }
         }
     }

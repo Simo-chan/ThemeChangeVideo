@@ -67,4 +67,6 @@ dependencies {
     implementation("androidx.compose.material:material-icons-extended:1.7.8")
     //Koin DI
     implementation("io.insert-koin:koin-androidx-compose:3.5.6")
+    //Splash screen
+    implementation("androidx.core:core-splashscreen:1.0.1")
 }

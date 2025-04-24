@@ -6,5 +6,5 @@ import org.koin.dsl.module
 
 val appModule = module {
     single { DataStore(androidContext()) }
-    viewModelOf(::ViewModel)
+    viewModelOf(::ExampleViewModel)
 }
